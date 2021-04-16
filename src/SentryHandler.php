@@ -27,14 +27,14 @@ final class SentryHandler extends AbstractProcessingHandler
     /**
      * @var list<ScopeProcessor>
      */
-    private array $scopeProcessors;
+    private array $scopeProcessors = [];
 
     /**
-     * @param HubInterface    $hub             The sentry hub used to send event to Sentry
-     * @param int             $level           The minimum logging level at which this handler will be triggered
-     * @param bool            $bubble          Whether the messages that are handled can bubble up the stack or not
-     * @param bool            $sendContext     Whether to send record['context'] vars to sentry
-     * @param iterable<mixed> $scopeProcessors Scope processors that will be called before reporting event
+     * @param HubInterface $hub             The sentry hub used to send event to Sentry
+     * @param int          $level           The minimum logging level at which this handler will be triggered
+     * @param bool         $bubble          Whether the messages that are handled can bubble up the stack or not
+     * @param bool         $sendContext     Whether to send record['context'] vars to sentry
+     * @param iterable     $scopeProcessors Scope processors that will be called before reporting event
      */
     public function __construct(
         HubInterface $hub,
@@ -47,10 +47,9 @@ final class SentryHandler extends AbstractProcessingHandler
 
         $this->hub         = $hub;
         $this->sendContext = $sendContext;
+
         foreach ($scopeProcessors as $scopeProcessor) {
-            if ($scopeProcessor instanceof ScopeProcessor) {
-                $this->scopeProcessors[] = $scopeProcessor;
-            } else {
+            if (!($scopeProcessor instanceof ScopeProcessor)) {
                 $msg = sprintf(
                     'All scope processors must be %s, %s given ',
                     ScopeProcessor::class,
@@ -58,6 +57,8 @@ final class SentryHandler extends AbstractProcessingHandler
                 );
                 throw new \InvalidArgumentException($msg);
             }
+
+            $this->scopeProcessors[] = $scopeProcessor;
         }
     }
 
@@ -78,12 +79,13 @@ final class SentryHandler extends AbstractProcessingHandler
         // the record with the highest severity is the "main" one
         $main = array_reduce(
             $records,
-            static function ($highest, $record) {
-                return $record['level'] >= ($highest['level'] ?? $record['level']) ? $record : $highest;
+            static function (?array $highest, array $record): array {
+                return ($highest === null || $record['level'] > $highest['level']) ? $record : $highest;
             }
         );
 
         foreach ($records as $record) {
+            \assert(\is_array($record));
             $record              = $this->processRecord($record);
             $record['formatted'] = $this->getFormatter()->format($record);
 
@@ -141,7 +143,14 @@ final class SentryHandler extends AbstractProcessingHandler
     private function fillContextFromBreadcrumbs(Scope $scope): void
     {
         foreach ($this->breadcrumbsBuffer as $breadcrumbRecord) {
+            \assert(\is_array($breadcrumbRecord['context']));
+            \assert(\is_array($breadcrumbRecord['extra']));
             $context = array_merge($breadcrumbRecord['context'], $breadcrumbRecord['extra']);
+
+            $contextWithStringKeys = [];
+            foreach ($context as $k => $v) {
+                $contextWithStringKeys[(string) $k] = $v;
+            }
 
             $scope->addBreadcrumb(
                 new Breadcrumb(
@@ -149,7 +158,7 @@ final class SentryHandler extends AbstractProcessingHandler
                     $this->getBreadcrumbTypeFromLevel((int) $breadcrumbRecord['level']),
                     (string) $breadcrumbRecord['channel'] ?: 'N/A',
                     (string) $breadcrumbRecord['message'] ?: 'N/A',
-                    $context
+                    $contextWithStringKeys
                 )
             );
         }
