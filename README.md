@@ -1,7 +1,6 @@
 # Monolog Sentry Handler
 
 [![Build Status](https://github.com/homeappcorporate/monolog-sentry-handler/actions/workflows/main.yml/badge.svg)](https://github.com/homeappcorporate/monolog-sentry-handler/actions)
-[![Latest Version](https://img.shields.io/github/release//monolog-sentry-handler.svg?style=flat-square)](https://packagist.org/packages/bgalati/monolog-sentry-handler)
 [![MIT License](https://img.shields.io/github/license/homeappcorporate/monolog-sentry-handler?style=flat-square)](LICENSE)
 
 It is a [Monolog](https://github.com/Seldaek/monolog) handler for Sentry PHP SDK v2 with breadcrumbs support.
