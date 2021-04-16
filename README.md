@@ -57,6 +57,7 @@ Check out the [handler constructor](src/SentryHandler.php) to know how to contro
 ## Documentation
 
 - [Symfony guide](doc/guide-symfony.md): it gives a way to integrate this handler to your app
+- [Symfony simple install](doc/guide-symfony-simple.md): it gives a way to go with this handler without using FingersCrossed monolog handler
 
 ## FAQ
 
@@ -64,8 +65,6 @@ Check out the [handler constructor](src/SentryHandler.php) to know how to contro
 
 It is pretty much the same thing but this one captures Monolog records as breadcrumbs
 when flushing in batch.
-
-~~It provides a workaround for [issue getsentry/sentry-php#811](https://github.com/getsentry/sentry-php/issues/811) which prevents sending events to Sentry in long running process.~~
 
 Breadcrumbs support has been proposed in a pull request that has been refused for good reasons that
 can be checked in the [PR](https://github.com/getsentry/sentry-php/pull/844). Basically the official one aims to be as simple as possible.
