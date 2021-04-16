@@ -28,7 +28,7 @@
         }
     },
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^7.4",
         "monolog/monolog": "^2.2",
         "sentry/sentry": "^3.2"
     },
