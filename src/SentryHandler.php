@@ -82,7 +82,7 @@ final class SentryHandler extends AbstractProcessingHandler
             static function (?array $highest, array $record): array {
                 return ($highest === null || $record['level'] > $highest['level']) ? $record : $highest;
             }
-        );
+        ) ?? [];
 
         foreach ($records as $record) {
             \assert(\is_array($record));
