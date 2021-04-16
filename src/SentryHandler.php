@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Homeapp\MonologSentryHandler;
 
-use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
 use Sentry\Breadcrumb;
@@ -100,7 +99,7 @@ final class SentryHandler extends AbstractProcessingHandler
         $sentryEvent = SentryEvent::createEvent();
         $sentryLevel = $this->getSeverityFromLevel((int) $record['level']);
         $sentryEvent->setLevel($sentryLevel);
-        $sentryEvent->setMessage((new LineFormatter('%channel%.%level_name%: %message%'))->format($record));
+        $sentryEvent->setMessage((string) $record['message']);
 
         if (isset($record['context']['exception']) && $record['context']['exception'] instanceof Throwable) {
             $sentryEvent->setExceptions([new ExceptionDataBag($record['context']['exception'])]);
