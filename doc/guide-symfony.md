@@ -135,7 +135,7 @@ services:
         autowire: true
         autoconfigure: true
     # [...]
-    BGalati\MonologSentryHandler\SentryHandler: ~
+    Homeapp\MonologSentryHandler\SentryHandler: ~
 
     Sentry\State\HubInterface:
         factory: ['@App\SentryFactory', 'create']
@@ -173,7 +173,7 @@ monolog:
             handler: sentry_handler
         sentry_handler:
             type: service
-            id: 'BGalati\MonologSentryHandler\SentryHandler'
+            id: 'Homeapp\MonologSentryHandler\SentryHandler'
         # [...]
 ```
 
