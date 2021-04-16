@@ -1,17 +1,18 @@
 # Extension points
 
-It is required to inherit from `SentryHandler` class and override these methods:
+You can write your own `ScopeProcessor` implementations and pass them to `SentryHandler`, to fill SentryScope or SentryEvent with additional information:
 
 ```php
 <?php
 
-use BGalati\MonologSentryHandler\SentryHandler;
+use Sentry\Event as SentryEvent;
+use Homeapp\MonologSentryHandler\ScopeProcessor;
 use Sentry\State\Scope;
 
-class CustomSentryHandler extends SentryHandler
+class CustomScopeProcessor implements ScopeProcessor
 {
     /** {@inheritdoc} */
-    protected function processScope(Scope $scope, array $record, array $sentryEvent): void
+    public function processScope(Scope $scope, array $record, SentryEvent $sentryEvent): void
     {
         // Your custom logic like this one:
         // ....
@@ -26,16 +27,6 @@ class CustomSentryHandler extends SentryHandler
                 $scope->setTag($key, $value);
             }
         }
-    }
-
-    /** {@inheritdoc} */
-    protected function afterWrite(): void
-    {
-        // Your custom code before events are flushed
-        // ...
-
-        // Call parent method to keep default behavior or don't call it if you don't need it
-        parent::afterWrite();
     }
 }
 ```
