@@ -99,7 +99,7 @@ final class SentryHandler extends AbstractProcessingHandler
         $sentryEvent = SentryEvent::createEvent();
         $sentryLevel = $this->getSeverityFromLevel((int) $record['level']);
         $sentryEvent->setLevel($sentryLevel);
-        $sentryEvent->setMessage((string) $record['message']);
+        $sentryEvent->setMessage($this->formatter->format($record));
 
         if (isset($record['context']['exception']) && $record['context']['exception'] instanceof Throwable) {
             $sentryEvent->setExceptions([new ExceptionDataBag($record['context']['exception'])]);
