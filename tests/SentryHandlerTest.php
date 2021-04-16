@@ -7,6 +7,7 @@ namespace Homeapp\MonologSentryHandler\Tests;
 use Coduo\PHPMatcher\PHPUnit\PHPMatcherAssertions;
 use GuzzleHttp\Promise\FulfilledPromise;
 use GuzzleHttp\Promise\PromiseInterface;
+use Homeapp\MonologSentryHandler\ScopeContextProcessor;
 use Homeapp\MonologSentryHandler\ScopeProcessor;
 use Homeapp\MonologSentryHandler\SentryHandler;
 use Monolog\Formatter\LineFormatter;
@@ -62,13 +63,16 @@ class SentryHandlerTest extends TestCase
         unset($this->hub, $this->transport, $this->spyScopeProcessor);
     }
 
+    /**
+     * @throws \JsonException
+     */
     public function testHandle(): void
     {
         $handler = $this->createSentryHandler();
 
         $record = [
             'message'    => 'My info message',
-            'context'    => [],
+            'context'    => ['someId' => '12345qq'],
             'level'      => Logger::INFO,
             'level_name' => Logger::getLevelName(Logger::INFO),
             'channel'    => 'app',
@@ -80,7 +84,10 @@ class SentryHandlerTest extends TestCase
         $this->assertCapturedEvent(
             Severity::info(),
             'My info message',
-            ['monolog.formatted' => 'app.INFO: My info message []']
+            [
+                'monolog.formatted' => 'app.INFO: My info message',
+                'someId'            => '12345qq',
+            ]
         );
     }
 
@@ -102,7 +109,7 @@ class SentryHandlerTest extends TestCase
         $this->assertCapturedEvent(
             Severity::info(),
             'My info message',
-            ['monolog.formatted' => 'app.INFO: My info message []'],
+            ['monolog.formatted' => 'app.INFO: My info message'],
             $exception
         );
     }
@@ -191,7 +198,7 @@ class SentryHandlerTest extends TestCase
         $this->assertCapturedEvent(
             Severity::fatal(),
             'Emergency message',
-            ['monolog.formatted' => 'chan-emerg.EMERGENCY: Emergency message ["extra-emerg"]'],
+            ['monolog.formatted' => 'chan-emerg.EMERGENCY: Emergency message'],
             null,
             [
                 [
@@ -328,7 +335,7 @@ class SentryHandlerTest extends TestCase
         $this->assertCapturedEvent(
             Severity::fatal(),
             'Critical message',
-            ['monolog.formatted' => 'test.CRITICAL: Critical message []'],
+            ['monolog.formatted' => 'test.CRITICAL: Critical message'],
             $exception,
             [
                 [
@@ -385,7 +392,7 @@ class SentryHandlerTest extends TestCase
         $this->assertCapturedEvent(
             Severity::info(),
             'Info message',
-            ['monolog.formatted' => 'test.INFO: Info message []'],
+            ['monolog.formatted' => 'test.INFO: Info message'],
             null,
             [
                 [
@@ -428,6 +435,9 @@ class SentryHandlerTest extends TestCase
         $this->assertNull($this->transport->spiedEvent);
     }
 
+    /**
+     * @throws \JsonException
+     */
     private function assertCapturedEvent(Severity $severity, string $message, array $extra, \Exception $exception = null, array $breadcrumbs = []): void
     {
         $event = $this->transport->getSpiedEvent();
@@ -451,9 +461,14 @@ class SentryHandlerTest extends TestCase
         $this->assertMatchesPattern('@string@', $event->getServerName());
         $this->assertTrue($this->spyScopeProcessor->wasCalled);
 
+        $this->assertSame(
+            $extra,
+            $event->getExtra()
+        );
+
         if ($breadcrumbs) {
             $this->assertMatchesPattern(
-                json_encode($breadcrumbs),
+                json_encode($breadcrumbs, \JSON_THROW_ON_ERROR),
                 json_encode(
                     array_map(
                         static function (Breadcrumb $breadcrumb) {
@@ -467,7 +482,8 @@ class SentryHandlerTest extends TestCase
                             ];
                         },
                         $event->getBreadcrumbs()
-                    )
+                    ),
+                    \JSON_THROW_ON_ERROR
                 )
             );
         } else {
@@ -493,7 +509,7 @@ class SentryHandlerTest extends TestCase
     {
         $this->spyScopeProcessor = new SpyScopeProcessor();
 
-        $handler = new SentryHandler($this->hub, $level, true, [$this->spyScopeProcessor]);
+        $handler = new SentryHandler($this->hub, $level, true, [$this->spyScopeProcessor, new ScopeContextProcessor()]);
 
         $handler->setFormatter(new LineFormatter('%channel%.%level_name%: %message%'));
 

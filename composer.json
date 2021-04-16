@@ -42,7 +42,8 @@
         "sentry/sdk": "^3.1",
         "symfony/phpunit-bridge": "^4.3",
         "symfony/var-dumper": ">4.3",
-        "vimeo/psalm": "^4.7"
+        "vimeo/psalm": "^4.7",
+        "ext-json": "*"
     },
     "scripts": {
         "check": "./vendor/bin/phpunit && ./vendor/bin/psalm && ./vendor/bin/phpstan analyze && vendor/bin/php-cs-fixer fix -v --dry-run --stop-on-violation"

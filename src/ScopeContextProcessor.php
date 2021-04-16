@@ -13,6 +13,10 @@ class ScopeContextProcessor implements ScopeProcessor
     {
         if (isset($record['context']) && \is_array($record['context'])) {
             foreach ($record['context'] as $key => $value) {
+                if ($key === 'exception') {
+                    // context.exception already in event
+                    continue;
+                }
                 $scope->setExtra((string) $key, $value);
             }
         }
