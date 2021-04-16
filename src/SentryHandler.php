@@ -22,8 +22,6 @@ final class SentryHandler extends AbstractProcessingHandler
 
     private array $breadcrumbsBuffer = [];
 
-    private bool $sendContext;
-
     /**
      * @var list<ScopeProcessor>
      */
@@ -33,20 +31,17 @@ final class SentryHandler extends AbstractProcessingHandler
      * @param HubInterface $hub             The sentry hub used to send event to Sentry
      * @param int          $level           The minimum logging level at which this handler will be triggered
      * @param bool         $bubble          Whether the messages that are handled can bubble up the stack or not
-     * @param bool         $sendContext     Whether to send record['context'] vars to sentry
      * @param iterable     $scopeProcessors Scope processors that will be called before reporting event
      */
     public function __construct(
         HubInterface $hub,
         int $level = Logger::DEBUG,
         bool $bubble = true,
-        bool $sendContext = true,
         iterable $scopeProcessors = []
     ) {
         parent::__construct($level, $bubble);
 
-        $this->hub         = $hub;
-        $this->sendContext = $sendContext;
+        $this->hub = $hub;
 
         foreach ($scopeProcessors as $scopeProcessor) {
             if (!($scopeProcessor instanceof ScopeProcessor)) {
@@ -115,9 +110,6 @@ final class SentryHandler extends AbstractProcessingHandler
             function (Scope $scope) use ($record, $sentryEvent, $sentryLevel): void {
                 $scope->setLevel($sentryLevel);
                 $scope->setExtra('monolog.formatted', $record['formatted'] ?? '');
-                if ($this->sendContext) {
-                    $this->fillScopeWithContext($record, $scope);
-                }
 
                 $this->fillContextFromBreadcrumbs($scope);
 
@@ -127,17 +119,6 @@ final class SentryHandler extends AbstractProcessingHandler
             });
 
         $this->afterWrite();
-    }
-
-    private function fillScopeWithContext(array $record, Scope $scope): void
-    {
-        if (isset($record['context']) && \is_array($record['context'])) {
-            foreach ($record['context'] as $key => $value) {
-                if (is_scalar($value)) {
-                    $scope->setExtra((string) $key, (string) $value);
-                }
-            }
-        }
     }
 
     private function fillContextFromBreadcrumbs(Scope $scope): void

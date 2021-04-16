@@ -493,7 +493,7 @@ class SentryHandlerTest extends TestCase
     {
         $this->spyScopeProcessor = new SpyScopeProcessor();
 
-        $handler = new SentryHandler($this->hub, $level, true, true, [$this->spyScopeProcessor]);
+        $handler = new SentryHandler($this->hub, $level, true, [$this->spyScopeProcessor]);
 
         $handler->setFormatter(new LineFormatter('%channel%.%level_name%: %message% %extra%'));
 

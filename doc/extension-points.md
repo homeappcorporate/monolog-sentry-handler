@@ -16,15 +16,9 @@ class CustomScopeProcessor implements ScopeProcessor
     {
         // Your custom logic like this one:
         // ....
-        if (isset($record['context']['extra']) && \is_array($record['context']['extra'])) {
-            foreach ($record['context']['extra'] as $key => $value) {
+        if (isset($record['context']) && \is_array($record['context'])) {
+            foreach ($record['context'] as $key => $value) {
                 $scope->setExtra((string) $key, $value);
-            }
-        }
-
-        if (isset($record['context']['tags']) && \is_array($record['context']['tags'])) {
-            foreach ($record['context']['tags'] as $key => $value) {
-                $scope->setTag($key, $value);
             }
         }
     }
