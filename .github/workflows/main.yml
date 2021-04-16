@@ -25,6 +25,15 @@ jobs:
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-php-
+          
+    - name: Setup PHP Action
+      uses: shivammathur/setup-php@2.10.0
+      with:
+        php-version: 7.4.16
+        extensions: ""
+        ini-values: ""
+        coverage: ""
+        tools: ""
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
