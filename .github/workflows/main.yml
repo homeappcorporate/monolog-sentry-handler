@@ -1,0 +1,51 @@
+name: PHP Composer
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate --strict
+
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v2
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-
+          
+    - name: Setup PHP Action
+      uses: shivammathur/setup-php@2.10.0
+      with:
+        php-version: 7.4.16
+        extensions: ""
+        ini-values: ""
+        coverage: ""
+        tools: ""
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+
+    - name: Run phpunit tests
+      run: ./vendor/bin/phpunit
+
+    - name: Run phpstan
+      run: ./vendor/bin/phpstan analyze
+    
+    - name: Run psalm
+      run: ./vendor/bin/psalm --no-cache
+      
+    - name: Check codestyle
+      run: vendor/bin/php-cs-fixer fix -v --dry-run --stop-on-violation --using-cache=n
