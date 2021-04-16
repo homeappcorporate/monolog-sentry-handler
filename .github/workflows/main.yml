@@ -38,5 +38,14 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
 
-    - name: Install dependencies
+    - name: Run phpunit tests
       run: ./vendor/bin/phpunit
+
+    - name: Run phpstan
+      run: ./vendor/bin/phpstan analyze
+    
+    - name: Run psalm
+      run: ./vendor/bin/psalm --no-cache
+      
+    - name: Check codestyle
+      run: vendor/bin/php-cs-fixer fix -v --dry-run --stop-on-violation --using-cache=n
