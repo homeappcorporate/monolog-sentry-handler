@@ -79,7 +79,7 @@ class SentryHandlerTest extends TestCase
 
         $this->assertCapturedEvent(
             Severity::info(),
-            'app.INFO: My info message',
+            'My info message',
             ['monolog.formatted' => 'app.INFO: My info message []']
         );
     }
@@ -101,7 +101,7 @@ class SentryHandlerTest extends TestCase
 
         $this->assertCapturedEvent(
             Severity::info(),
-            'app.INFO: My info message',
+            'My info message',
             ['monolog.formatted' => 'app.INFO: My info message []'],
             $exception
         );
@@ -190,7 +190,7 @@ class SentryHandlerTest extends TestCase
 
         $this->assertCapturedEvent(
             Severity::fatal(),
-            'chan-emerg.EMERGENCY: Emergency message',
+            'Emergency message',
             ['monolog.formatted' => 'chan-emerg.EMERGENCY: Emergency message ["extra-emerg"]'],
             null,
             [
@@ -327,7 +327,7 @@ class SentryHandlerTest extends TestCase
 
         $this->assertCapturedEvent(
             Severity::fatal(),
-            'test.CRITICAL: Critical message',
+            'Critical message',
             ['monolog.formatted' => 'test.CRITICAL: Critical message []'],
             $exception,
             [
@@ -384,7 +384,7 @@ class SentryHandlerTest extends TestCase
 
         $this->assertCapturedEvent(
             Severity::info(),
-            'test.INFO: Info message',
+            'Info message',
             ['monolog.formatted' => 'test.INFO: Info message []'],
             null,
             [
