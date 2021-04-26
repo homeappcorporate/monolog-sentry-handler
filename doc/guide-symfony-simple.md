@@ -11,7 +11,7 @@ Also, symfony sentry bundle will be used in this guide
 
 ```
 composer require symfony/http-client nyholm/psr7 guzzlehttp/promises
-compose require sentry/sentry-symfony
+composer require sentry/sentry-symfony
 ```
 
 Then write following in the `sentry.yaml`(or customize it for you own needs):
