@@ -20,7 +20,10 @@
         }
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     },
     "extra": {
         "branch-alias": {
@@ -28,16 +31,16 @@
         }
     },
     "require": {
-        "php": "^7.4",
-        "monolog/monolog": "^2.2",
-        "sentry/sentry": "^3.2"
+        "php": "^7.4 || ^8.0",
+        "monolog/monolog": "^1.6 || ^2.0",
+        "sentry/sentry": "^3.17"
     },
     "require-dev": {
         "coduo/php-matcher": "^3.2.2",
         "friendsofphp/php-cs-fixer": "^2.15",
-        "jangregor/phpstan-prophecy": "0.8.0",
-        "phpstan/phpstan": "0.12.25",
-        "phpstan/phpstan-phpunit": "0.12.8",
+        "jangregor/phpstan-prophecy": "^0.8.1",
+        "phpstan/phpstan": "^0.12.25",
+        "phpstan/phpstan-phpunit": "^0.12.8",
         "phpunit/phpunit": "^7.5||^8.3",
         "sentry/sdk": "^3.1",
         "symfony/phpunit-bridge": "^4.3",
