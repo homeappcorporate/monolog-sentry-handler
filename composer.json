@@ -31,7 +31,7 @@
         }
     },
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^7.4 || ^8",
         "monolog/monolog": "^1.6 || ^2.0",
         "sentry/sentry": "^3.17"
     },
